@@ -21,6 +21,7 @@ done
 ln -sv bin $LFS/sbin
 ln -sv bin $LFS/usr/sbin
 
+mkdir -pv $LFS/{dev,dev/pts,proc,sys,run}
 mkdir -pv $LFS/{boot,home,mnt,opt,srv}
 mkdir -pv $LFS/etc/{opt,sysconfig}
 mkdir -pv $LFS/lib/firmware
@@ -144,6 +145,9 @@ LDFLAGS="$LDFLAGS -Wl,-soname,libc.musl-x86_64.so.1"
 ./configure CROSS_COMPILE=$LFS_TGT- --prefix=/usr --target=$LFS_TGT
 make
 make -j1 install DESTDIR=$LFS
+mv -f $LFS/usr/lib/libc.so $LFS/usr/lib/ld-musl-x86_64.so.1
+ln -sf ld-musl-x86_64.so.1 $LFS/usr/lib/libc.musl-x86_64.so.1
+ln -sf ld-musl-x86_64.so.1 $LFS/usr/lib/libc.so
 $LFS_TGT-gcc $CFLAGS $PROJECT_ROOT/distfiles/getent.c -o getent
 cp getent $LFS/usr/bin
 cd $PROJECT_ROOT/work
@@ -162,6 +166,12 @@ cd build
     --enable-default-ssp      \
     --disable-nls             \
     --disable-multilib        \
+    --disable-libatomic       \
+    --disable-libgomp         \
+    --disable-libquadmath     \
+    --disable-libsanitizer    \
+    --disable-libssp          \
+    --disable-libvtv          \
     --enable-languages=c,c++
 make
 make -j1 install
@@ -203,6 +213,7 @@ cd ..
 make
 make -j1 DESTDIR=$LFS TIC_PATH=$(pwd)/build/progs/tic install
 ln -sv libncursesw.so $LFS/usr/lib/libncurses.so
+ln -sv libncursesw.so $LFS/usr/lib/libtinfo.so
 sed -e 's/^#if.*XOPEN.*$/#if 1/' \
     -i $LFS/usr/include/curses.h
 cd $PROJECT_ROOT/work
@@ -491,6 +502,10 @@ make defconfig
 sed -i '/CONFIG_TC/s/.*/CONFIG_TC=n/' .config
 make CROSS_COMPILE=$LFS_TGT-
 cp busybox $LFS/usr/bin
+ln -s busybox $LFS/usr/bin/adduser
+ln -s busybox $LFS/usr/bin/addgroup
+ln -s busybox $LFS/usr/bin/vi
+ln -s busybox $LFS/usr/bin/ash
 cd $PROJECT_ROOT/work
 rm -rf busybox-1.37.0
 
@@ -502,12 +517,12 @@ make -j1 install DESTDIR=$LFS
 cd $PROJECT_ROOT/work
 rm -rf Linux-PAM-1.6.1
 
-tar -xf $PROJECT_ROOT/distfiles/libcap-2.72.tar.xz
-cd libcap-2.72
+tar -xf $PROJECT_ROOT/distfiles/libcap-2.73.tar.xz
+cd libcap-2.73
 make BUILD_CC=gcc CROSS_COMPILE=x86_64-alpine-linux-musl- LIBDIR=/usr/lib
 make -j1 install DESTDIR=$LFS LIBDIR=/usr/lib
 cd $PROJECT_ROOT/work
-rm -rf libcap-2.72
+rm -rf libcap-2.73
 
 tar -xf $PROJECT_ROOT/distfiles/fakeroot_1.36.orig.tar.gz
 cd fakeroot-1.36
@@ -526,3 +541,25 @@ $LFS_TGT-gcc $CFLAGS -D_GNU_SOURCE scanelf.c paxelf.c paxinc.c paxldso.c xfuncs.
 cp scanelf $LFS/usr/bin
 cd $PROJECT_ROOT/work
 rm -rf pax-utils-1.3.8
+
+tar -xf $PROJECT_ROOT/distfiles/opendoas-6.8.2.tar.gz
+cd OpenDoas-6.8.2
+CC=$LFS_TGT-gcc ./configure --host=$LFS_TGT --without-pam --prefix=/usr
+CC=$LFS_TGT-gcc make
+make -j1 DESTDIR=$LFS install
+cd $PROJECT_ROOT/work
+rm -rf OpenDoas-6.8.2
+
+tar -xf $PROJECT_ROOT/distfiles/apk-tools-v2.14.6.tar.gz
+cd apk-tools-v2.14.6
+make CROSS_COMPILE=x86_64-alpine-linux-musl- LUA=no
+make -j1 CROSS_COMPILE=x86_64-alpine-linux-musl- LUA=no DESTDIR=$LFS install
+cd $PROJECT_ROOT/work
+rm -rf apk-tools-v2.14.6
+
+git clone https://git.movq.org/mike/abuild -b bootstrap
+cd abuild
+make CC=$LFS_TGT-gcc
+make -j1 DESTDIR=$LFS install
+cd $PROJECT_ROOT/work
+rm -rf abuild
