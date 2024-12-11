@@ -438,8 +438,8 @@ make -j1 DESTDIR=$LFS install
 cd $PROJECT_ROOT/work
 rm -rf zlib-1.3.1
 
-tar -xf $PROJECT_ROOT/distfiles/openssl-3.4.0.tar.gz
-cd openssl-3.4.0
+tar -xf $PROJECT_ROOT/distfiles/openssl-3.3.2.tar.gz
+cd openssl-3.3.2
 ./config --prefix=/usr         \
 	 --cross-compile-prefix=$LFS_TGT- \
          --openssldir=/etc/ssl \
@@ -449,7 +449,7 @@ cd openssl-3.4.0
 make
 make -j1 DESTDIR=$LFS install
 cd $PROJECT_ROOT/work
-rm -rf openssl-3.4.0
+rm -rf openssl-3.3.2
 
 tar -xf $PROJECT_ROOT/distfiles/util-linux-2.40.2.tar.xz
 cd util-linux-2.40.2
@@ -504,8 +504,13 @@ make CROSS_COMPILE=$LFS_TGT-
 cp busybox $LFS/usr/bin
 ln -s busybox $LFS/usr/bin/adduser
 ln -s busybox $LFS/usr/bin/addgroup
+ln -s busybox $LFS/usr/bin/bc
+ln -s busybox $LFS/usr/bin/getfattr
 ln -s busybox $LFS/usr/bin/vi
 ln -s busybox $LFS/usr/bin/ash
+ln -s busybox $LFS/usr/bin/unzip
+ln -s busybox $LFS/usr/bin/zip
+ln -s busybox $LFS/usr/bin/bzip2
 cd $PROJECT_ROOT/work
 rm -rf busybox-1.37.0
 
