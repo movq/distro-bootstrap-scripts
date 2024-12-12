@@ -11,3 +11,4 @@ sudo chmod u+s rootfs/usr/bin/busybox
 sudo chmod u+s rootfs/usr/bin/doas
 sudo chmod go-w rootfs/etc/doas.conf
 git clone https://git.movq.org/mike/aports.git -b bootstrap rootfs/home/mike/aports
+cp -r distfiles/* rootfs/var/cache/distfiles

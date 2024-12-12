@@ -101,11 +101,11 @@ doas apk add attr
 
 cd /home/mike/aports/main/openssl
 abuild # fails
-rm -rf pkg/openssl-dev pkg/openssl-dbg pkg/openssl-doc pkg/openssl-libs-static pkg/openssl-misc
-mkdir pkg/libcrypto3
-abuild rootpkg # wtf?
-cd /home/mike/packages/main/x86_64
-apk index -o APKINDEX.tar.gz *.apk
+#rm -rf pkg/openssl-dev pkg/openssl-dbg pkg/openssl-doc pkg/openssl-libs-static pkg/openssl-misc
+#mkdir pkg/libcrypto3
+#abuild rootpkg # wtf?
+#cd /home/mike/packages/main/x86_64
+#apk index -o APKINDEX.tar.gz *.apk
 
 cd /home/mike/aports/main/python3
 abuild

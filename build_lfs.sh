@@ -503,6 +503,7 @@ tar -xf $PROJECT_ROOT/distfiles/busybox-1.37.0.tar.bz2
 cd busybox-1.37.0
 make defconfig
 sed -i '/CONFIG_TC/s/.*/CONFIG_TC=n/' .config
+yes '' | make oldconfig
 make CROSS_COMPILE=$LFS_TGT-
 cp busybox $LFS/usr/bin
 ln -s busybox $LFS/usr/bin/adduser
@@ -514,6 +515,7 @@ ln -s busybox $LFS/usr/bin/ash
 ln -s busybox $LFS/usr/bin/unzip
 ln -s busybox $LFS/usr/bin/zip
 ln -s busybox $LFS/usr/bin/bzip2
+ln -s busybox $LFS/usr/bin/wget
 cd $PROJECT_ROOT/work
 rm -rf busybox-1.37.0
 
@@ -538,7 +540,7 @@ patch -p1 -i $PROJECT_ROOT/distfiles/fakeroot-no64.patch
 patch -p1 -i $PROJECT_ROOT/distfiles/xstatjunk.patch
 ./bootstrap
 sed -i '/\(linux-gnu\*\)/s/.*/\(linux-musl\)/' configure
-./configure --prefix=/usr --libdir=/usr/lib --host=$LFS_TGT
+./configure --prefix=/usr --libdir=/usr/lib --host=$LFS_TGT CFLAGS="$CFLAGS -DLIBFAKEROOT_DEBUGGING=1"
 make
 make -j1 DESTDIR=$LFS  install
 cd $PROJECT_ROOT/work
