@@ -1,18 +1,26 @@
 #!/bin/bash
 
+set -x
+set -e
+
 doas apk add --initdb
 abuild-keygen -a
-doas mkdir -p /var/cache/distfiles
-doas chown 1000:1000 /var/cache/distfiles
+doas mkdir -p /etc/apk/keys
+doas cp /home/mike/.abuild/*.pub /etc/apk/keys
+echo /home/mike/packages/main | doas tee /etc/apk/repositories
+
 cd /home/mike/aports/main/musl
 abuild
-doas apk add musl musl-dev
+doas apk add musl musl-dev musl-utils
 
 cd /home/mike/aports/main/binutils
 BOOTSTRAP=1 abuild
 doas apk add binutils
 
 cd /home/mike/aports/main/bzip2
+abuild
+
+cd /home/mike/aports/main/pkgconf
 abuild
 doas apk add bzip2 bzip2-dev
 
@@ -53,10 +61,7 @@ doas apk add mpc1-dev
 
 cd /home/mike/aports/main/gcc
 LANG_ADA=false LANG_D=false LANG_OBJC=false LANG_GO=false LANG_FORTRAN=false abuild
-
-cd /home/mike/aports/main/pkgconf
-abuild
-doas apk add pkgconf
+doas apk add gcc g++
 
 cd /home/mike/aports/main/mpdecimal
 abuild
@@ -76,6 +81,7 @@ abuild
 
 cd /home/mike/aports/main/build-base
 abuild
+doas apk add build-base
 
 cd /home/mike/aports/main/scdoc
 abuild
@@ -98,15 +104,12 @@ abuild # fails
 rm -rf pkg/openssl-dev pkg/openssl-dbg pkg/openssl-doc pkg/openssl-libs-static pkg/openssl-misc
 mkdir pkg/libcrypto3
 abuild rootpkg # wtf?
-cd /home/mike/packages/main
+cd /home/mike/packages/main/x86_64
 apk index -o APKINDEX.tar.gz *.apk
 
 cd /home/mike/aports/main/python3
 abuild
 doas apk add python3 python3-dev openssl
-
-# APK breaks due to openssl incompatibility
-# manually compile
 
 cd /home/mike/aports/main/py3-installer
 abuild
@@ -140,11 +143,11 @@ cd /home/mike/aports/main/lua5.3
 abuild
 doas apk add lua5.3-dev
 
-/home/mike/aports/main/lua5.1
+cd /home/mike/aports/main/lua5.1
 abuild
 doas apk add lua5.1-dev
 
-/home/mike/aports/main/lua5.2
+cd /home/mike/aports/main/lua5.2
 abuild
 doas apk add lua5.2-dev
 
@@ -156,7 +159,7 @@ cd /home/mike/aports/main/readline
 abuild
 doas apk add readline-dev
 
-/home/mike/aports/main/lua5.4
+cd /home/mike/aports/main/lua5.4
 abuild
 doas apk add lua5.4-dev
 
@@ -205,7 +208,10 @@ abuild
 doas apk add libxml2-dev
 
 cd /home/mike/aports/main/gettext
+doas apk add musl-libintl
+doas apk del musl-libintl
 abuild
+doas apk del gettext-tiny
 doas apk add gettext
 
 cd /home/mike/aports/main/docbook-xsl
@@ -261,7 +267,19 @@ doas apk add tar
 
 cd /home/mike/aports/main/meson
 abuild
+
+cd /home/mike/aports/main/abuild
+abuild
+
 doas apk add abuild-meson
 
 cd /home/mike/aports/main/pax-utils
 abuild
+
+cd /home/mike/aports/main/mdev-conf
+abuild
+
+for pkg in main/bsd-compat-headers main/linux-headers main/alpine-baselayout main/ifupdown-ng main/openrc main/alpine-conf main/alpine-base; do
+	cd ~/aports/$pkg
+	abuild
+done

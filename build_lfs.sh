@@ -78,6 +78,8 @@ uuidd:x:80:
 wheel:x:97:
 users:x:999:
 nogroup:x:65534:
+mike:x:1000:
+abuild:x:1001:mike
 EOF
 
 # Cross toolchain
@@ -141,10 +143,11 @@ rm -rf linux-6.6.64
 
 tar -xf $PROJECT_ROOT/distfiles/musl-1.2.5.tar.gz
 cd musl-1.2.5
-LDFLAGS="$LDFLAGS -Wl,-soname,libc.musl-x86_64.so.1"
+export LDFLAGS="$LDFLAGS -Wl,-soname,libc.musl-x86_64.so.1"
 ./configure CROSS_COMPILE=$LFS_TGT- --prefix=/usr --target=$LFS_TGT
 make
 make -j1 install DESTDIR=$LFS
+unset LDFLAGS
 mv -f $LFS/usr/lib/libc.so $LFS/usr/lib/ld-musl-x86_64.so.1
 ln -sf ld-musl-x86_64.so.1 $LFS/usr/lib/libc.musl-x86_64.so.1
 ln -sf ld-musl-x86_64.so.1 $LFS/usr/lib/libc.so
@@ -532,6 +535,8 @@ rm -rf libcap-2.73
 tar -xf $PROJECT_ROOT/distfiles/fakeroot_1.36.orig.tar.gz
 cd fakeroot-1.36
 patch -p1 -i $PROJECT_ROOT/distfiles/fakeroot-no64.patch
+patch -p1 -i $PROJECT_ROOT/distfiles/xstatjunk.patch
+./bootstrap
 sed -i '/\(linux-gnu\*\)/s/.*/\(linux-musl\)/' configure
 ./configure --prefix=/usr --libdir=/usr/lib --host=$LFS_TGT
 make
@@ -551,7 +556,7 @@ tar -xf $PROJECT_ROOT/distfiles/opendoas-6.8.2.tar.gz
 cd OpenDoas-6.8.2
 CC=$LFS_TGT-gcc ./configure --host=$LFS_TGT --without-pam --prefix=/usr
 CC=$LFS_TGT-gcc make
-make -j1 DESTDIR=$LFS install
+fakeroot make -j1 DESTDIR=$LFS install
 cd $PROJECT_ROOT/work
 rm -rf OpenDoas-6.8.2
 
