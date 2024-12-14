@@ -569,6 +569,42 @@ make -j1 CROSS_COMPILE=x86_64-alpine-linux-musl- LUA=no DESTDIR=$LFS install
 cd $PROJECT_ROOT/work
 rm -rf apk-tools-v2.14.6
 
+tar -xf $PROJECT_ROOT/distfiles/flex-2.6.4.tar.gz
+cd flex-2.6.4.tar.gz
+rm -rf aclocal.m4 build-aux configure
+find m4 -mindepth 1 ! -name ax_prog_cc_for_build.m4 -delete
+rm -rf src/parse.c
+./autogen.sh
+./configure --prefix=/usr --libdir=/usr/lib --host=$LFS_TGT ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes
+make
+make -j1 DESTDIR=$LFS install
+
+tar -xf $PROJECT_ROOT/distfiles/bison-3.8.2.tar.xz
+tar -xf $PROJECT_ROOT/distfiles/gnulib-71b60370.tar.gz
+tar -xf $PROJECT_ROOT/distfiles/autoconf-2.72.tar.gz
+cd bison-3.8.2
+# deblob
+rm -rf aclocal.m4 configure Makefile.in GNUmakefile maint.mk data/m4sugar/* src/scan-code.c src/scan-gram.c src/scan-skel.c src/parse-gram.h src/parse-gram.c src/parse-gram.output
+find build-aux -mindepth 1 ! \( -name Darwin.valgrind -o -name Linux.valgrind -o -name cross-options.pl -o -name git-log-fix -o -name install-icc.sh -o -name local.mk -o -name move-if-change -o -name prev-version.txt -o -name update-b4-copyright -o -name update-package-copyright-year -o -name update-test \) -delete
+find m4 -mindepth 1 ! -name bison-check-compiler-flag.m4 -a ! -name bison-cxx-std.m4 -a ! -name bison-i18n.m4 -a ! -name c-working.m4 -a ! -name cxx.m4 -a ! -name flex.m4m -delete
+find . -name '*.gmo' -delete
+# add stuff
+cp ../autoconf-2.72/m4/m4.m4 m4
+cp ../autoconf-2.72/lib/m4sugar/foreach.m4 data/m4sugar
+cp ../autoconf-2.72/lib/m4sugar/m4sugar.m4 data/m4sugar
+bash $PROJECT_ROOT/distfiles/bison-3.8.2-import-gnulib.sh
+AUTOPOINT=true LIBTOOLIZE=true autoreconf -fi --no-recursive
+./configure --prefix=/usr --libdir=/usr/lib --host=$LFS_TGT
+# regenerate flex/bison outputs
+for i in scan-code scan-gram scan-skel; do
+	flex -t src/$i.l > src/$i.c
+done
+bison -d -o src/parse-gram.c src/parse-gram.y
+make
+make -j1 install DESTDIR=$LFS
+cd $PROJECT_ROOT
+rm -rf bison-3.8.2 autoconf-2.72 gnulib-71b60370
+
 git clone https://git.movq.org/mike/abuild -b bootstrap
 cd abuild
 make CC=$LFS_TGT-gcc

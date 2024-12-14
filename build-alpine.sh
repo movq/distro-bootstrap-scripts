@@ -268,18 +268,51 @@ doas apk add tar
 cd /home/mike/aports/main/meson
 abuild
 
+cd /home/mike/aports/main/flex
+abuild
+doas apk add flex
+
+cd /home/mike/aports/main/bison
+abuild
+doas apk add bison
+
 cd /home/mike/aports/main/abuild
 abuild
 
 doas apk add abuild-meson
 
+cd /home/mike/aports/main/bsd-compat-headers
+abuild
+
+cd /home/mike/aports/main/linux-headers
+abuild
+
+cd /home/mike/aports/main/alpine-baselayout
+abuild
+
+cd /home/mike/aports/main/ifupdown-ng
+ABUILD_BOOTSTRAP=1 abuild
+
+doas apk add ifupdown-any bsd-compat-headers libcap-dev linux-headers
+
+cd /home/mike/aports/main/openrc
+abuild
+doas apk add openrc
+
+cd /home/mike/aports/main/alpine-conf
+ABUILD_BOOTSTRAP=1 abuild
+
+cd /home/mike/aports/main/mdev-conf
+ABUILD_BOOTSTRAP=1 abuild
+
+doas apk add alpine-baselayout alpine-conf busybox-mdev-openrc busybox-openrc busybox-suid
+
+cd /home/mike/aports/main/alpine-base
+abuild
+
+cd /home/mike/aports/main/bash
+
 cd /home/mike/aports/main/pax-utils
 abuild
 
-cd /home/mike/aports/main/mdev-conf
-abuild
 
-for pkg in main/bsd-compat-headers main/linux-headers main/alpine-baselayout main/ifupdown-ng main/openrc main/alpine-conf main/alpine-base; do
-	cd ~/aports/$pkg
-	abuild
-done
