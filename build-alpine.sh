@@ -309,10 +309,21 @@ doas apk add alpine-baselayout alpine-conf busybox-mdev-openrc busybox-openrc bu
 
 cd /home/mike/aports/main/alpine-base
 abuild
+doas apk add alpine-base
+
+cd /home/mike/aports/main/ncurses
+abuild -r
+doas apk add ncurses-dev
 
 cd /home/mike/aports/main/bash
+abuild -r
 
-cd /home/mike/aports/main/pax-utils
+cd /home/mike/aports/py3-wheel
 abuild
 
+cd /home/mike/aports/py3-elftools
+abuild -r
 
+cd /home/mike/aports/main/pax-utils
+abuild -r
+doas apk add pax-utils

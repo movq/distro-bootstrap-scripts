@@ -516,6 +516,7 @@ ln -s busybox $LFS/usr/bin/unzip
 ln -s busybox $LFS/usr/bin/zip
 ln -s busybox $LFS/usr/bin/bzip2
 ln -s busybox $LFS/usr/bin/wget
+ln -s busybox $LFS/usr/bin/gunzip
 cd $PROJECT_ROOT/work
 rm -rf busybox-1.37.0
 
@@ -570,7 +571,7 @@ cd $PROJECT_ROOT/work
 rm -rf apk-tools-v2.14.6
 
 tar -xf $PROJECT_ROOT/distfiles/flex-2.6.4.tar.gz
-cd flex-2.6.4.tar.gz
+cd flex-2.6.4
 rm -rf aclocal.m4 build-aux configure
 find m4 -mindepth 1 ! -name ax_prog_cc_for_build.m4 -delete
 rm -rf src/parse.c

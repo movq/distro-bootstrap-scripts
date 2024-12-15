@@ -8,7 +8,7 @@ mount -vt sysfs sysfs $LFS/sys
 mount -vt tmpfs tmpfs $LFS/run
 cp /etc/resolv.conf $LFS/etc/resolv.conf
 
-env -i PATH=/usr/bin TERM=xterm-256color HOME=/root /usr/sbin/chroot $LFS /bin/bash
+env -i PATH=/usr/bin TERM=xterm-256color HOME=/root /usr/sbin/chroot $LFS /bin/ash
 
 umount $LFS/run
 umount $LFS/sys
