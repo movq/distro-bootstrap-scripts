@@ -411,12 +411,6 @@ cd       build
     --enable-default-ssp                           \
     --disable-nls                                  \
     --disable-multilib                             \
-    --disable-libatomic                            \
-    --disable-libgomp                              \
-    --disable-libquadmath                          \
-    --disable-libsanitizer                         \
-    --disable-libssp                               \
-    --disable-libvtv                               \
     --enable-languages=c,c++
 make
 make -j1 DESTDIR=$LFS install
@@ -579,6 +573,8 @@ rm -rf src/parse.c
 ./configure --prefix=/usr --libdir=/usr/lib --host=$LFS_TGT ac_cv_func_malloc_0_nonnull=yes ac_cv_func_realloc_0_nonnull=yes
 make
 make -j1 DESTDIR=$LFS install
+cd $PROJECT_ROOT/work
+rm -rf flex-2.6.4
 
 tar -xf $PROJECT_ROOT/distfiles/bison-3.8.2.tar.xz
 tar -xf $PROJECT_ROOT/distfiles/gnulib-71b60370.tar.gz
@@ -603,7 +599,7 @@ done
 bison -d -o src/parse-gram.c src/parse-gram.y
 make
 make -j1 install DESTDIR=$LFS
-cd $PROJECT_ROOT
+cd $PROJECT_ROOT/work
 rm -rf bison-3.8.2 autoconf-2.72 gnulib-71b60370
 
 git clone https://git.movq.org/mike/abuild -b bootstrap
