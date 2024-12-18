@@ -411,6 +411,7 @@ cd       build
     --enable-default-ssp                           \
     --disable-nls                                  \
     --disable-multilib                             \
+    --disable-libssp                               \
     --enable-languages=c,c++
 make
 make -j1 DESTDIR=$LFS install
@@ -510,7 +511,6 @@ ln -s busybox $LFS/usr/bin/unzip
 ln -s busybox $LFS/usr/bin/zip
 ln -s busybox $LFS/usr/bin/bzip2
 ln -s busybox $LFS/usr/bin/wget
-ln -s busybox $LFS/usr/bin/gunzip
 cd $PROJECT_ROOT/work
 rm -rf busybox-1.37.0
 

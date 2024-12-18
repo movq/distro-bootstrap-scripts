@@ -317,11 +317,12 @@ doas apk add ncurses-dev
 
 cd /home/mike/aports/main/bash
 abuild -r
+doas apk add bash
 
-cd /home/mike/aports/py3-wheel
+cd /home/mike/aports/main/py3-wheel
 abuild
 
-cd /home/mike/aports/py3-elftools
+cd /home/mike/aports/main/py3-elftools
 abuild -r
 
 cd /home/mike/aports/main/pax-utils

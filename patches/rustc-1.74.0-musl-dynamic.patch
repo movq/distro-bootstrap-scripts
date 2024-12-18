@@ -1,0 +1,15 @@
+diff --git a/compiler/rustc_target/src/spec/linux_musl_base.rs b/compiler/rustc_target/src/spec/linux_musl_base.rs
+index 61553e71b..b6a18217f 100644
+--- a/compiler/rustc_target/src/spec/linux_musl_base.rs
++++ b/compiler/rustc_target/src/spec/linux_musl_base.rs
+@@ -9,8 +9,8 @@ pub fn opts() -> TargetOptions {
+     base.post_link_objects_self_contained = crt_objects::post_musl_self_contained();
+     base.link_self_contained = LinkSelfContainedDefault::Musl;
+ 
+-    // These targets statically link libc by default
+-    base.crt_static_default = true;
++    // These targets statically link libc by default - no they don't!!!
++    base.crt_static_default = false;
+ 
+     base
+ }
